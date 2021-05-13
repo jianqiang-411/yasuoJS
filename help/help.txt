@@ -1,0 +1,171 @@
+---------------------------------------------使用gulp 压缩js-----------------------------------------
+js 编写后文件太大，可以使用gulp 来进行压缩。
+
+具体步骤如下：
+
+1.创建一个工作目录
+
+在该目录下安装 gulp
+
+npm install gulp --save-dev
+
+安装gulp-uglify 模块
+
+npm install gulp-uglify --save-dev
+
+ 
+
+2.在工作目录下编写脚本gulpfile.js
+
+var gulp = require('gulp')
+
+var uglify = require('gulp-uglify')
+
+gulp.task('script', done => {
+// 1\. 找到文件
+gulp.src('js/*.js')
+// 2\. 压缩文件
+.pipe(uglify())
+// 3\. 另存压缩后的文件
+.pipe(gulp.dest('dist/js'))
+
+done()
+})
+
+这个代码的意思是，创建一个script 的任务
+
+1.这个任务先找到 src 目录下的 后缀为 js 的文件
+
+2.将文件进行压缩
+
+3.将文件另存到dist/js 目录下。
+
+ 
+
+3.编写需要压缩的代码 a.js
+
+function demo (msg) {
+    alert('--------\r\n' + msg + '\r\n--------')
+}
+
+demo('Hi')
+ 
+
+4.执行任务
+
+在工作目录下执行 gulp script 意思是，gulp 会去查找 gulpfile.js 文件，并执行 script 的任务。
+
+ 
+
+5.在dist/js 下找到 a.js 
+
+function demo(n){alert("--------\r\n"+n+"\r\n--------")}demo("Hi");
+发现js代码确实被压缩了。
+
+
+---------------------------------------------gulp 压缩打包js文件、gulp方法-----------------------------------------
+
+gulp的方法
+
+  gulp.task(str,fn)
+    创建一个gulp任务
+  gulp.src(path)
+    文件来源
+  gulp.dest(path)
+    操作之后的文件到哪里去
+  .pipe(package)
+    执行一个gulp功能
+  gulp.watch()
+    监听
+  gulp.start()
+    执行gulp任务
+
+插件
+	1、压缩js文件
+		(1)cnpm install -D gulp-uglify
+
+		(2)在gulpfile.js文件中引入
+			var 压缩插件名=require("gulp-uglify")
+
+		(3)创建任务
+			gulp.task('自定义任务名',function(cb)
+			{
+				gulp.src("要压缩文件的路径")
+				.pipe(压缩插件名())
+				.pipe(gulp.dest("压缩文件的去处"))
+			})
+
+			其中:压缩一个js文件:
+					gulp.src("路径")
+				 压缩多个指定js文件:
+				 	gulp.src(["路径1","路径2",...])
+				 压缩文件夹下所有js文件:
+				 	gulp.src("文件夹路径/*.js")
+				 	
+	2、执行压缩打包
+			gulp 自定义任务名
+
+代码示例:
+
+var gulp = require('gulp');
+var yasuo=require("gulp-uglify")
+gulp.task('default', function(cb) {
+// 将你的默认的任务代码放在这
+	gulp.start("yasuotest")
+	cb();
+});
+
+//创建压缩任务
+gulp.task('yasuotest',function(cb){
+	gulp.src("./src/js/*.js")
+	.pipe(yasuo())
+	.pipe(gulp.dest("./dist/js"))
+	cb();
+})
+————————————————
+版权声明：本文为CSDN博主「神奇大叔」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_43294560/article/details/104248986
+
+
+
+---------------------------------------------gulp篇:速玩JS文件合并和压缩-----------------------------------------
+gulp合并插件
+安装: npm install gulp-concat --save-dev
+安装好之后
+
+var concat = require(‘gulp-concat’); //引用
+接下来，只要concat(‘xxx.js’)就算合并了。注意此时只是在内存中生成
+
+前面我们学过管道的概念，因此代码整合非常简单
+gulp.src([这里写上js]).pipe(concat(‘xxx.js’)).pipe(gulp.dest(‘目录’))
+
+
+var gp = require('gulp');
+var concat = require('gulp-concat');
+
+gp.task("taskName",function(){
+    // 把1.js和2.js合并为main.js，输出到dest/js目录下
+    gp.src(['1.js','2.js']).pipe(concat('main.js')).pipe(gp.dest('./dest/js'));
+})
+
+2.执行gulp任务
+gulp taskName
+
+第二个插件：压缩插件
+安装：npm install gulp-uglify --save-dev
+光合并没啥乱用，我们还需要压缩，减少网络传输
+
+这个插件就更简单了
+var uglify = require(‘gulp-uglify’);
+uglify()即可，参数都不要
+
+同样是编辑gulpfile.js
+var gp = require('gulp');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+gp.task("taskName",function(){
+    // 把1.js和2.js合并压缩为main.js，输出到dest/js目录下
+    gp.src(['1.js','2.js']).pipe(concat('main.js')).pipe(uglify()).pipe(gp.dest('./dest/js'));
+})
+
+执行这个任务后会生成压缩版的main.js
